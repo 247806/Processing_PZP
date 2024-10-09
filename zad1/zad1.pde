@@ -22,7 +22,7 @@ void setup() {
   drawCircles(width/10, width/3, 3 * height/4, 9*height/10);
   drawTriangles(width/2, width, 0, height/3);
   drawFigure(0, width/2, 0, height/3); 
-  drawArc(width/2, 4*width/5, 2*height/3, 9 * height/ 10);
+  drawArc(width/2, 2*width/3, 2*height/3, 9 * height/ 10);
   drawLogo(100,200);
 }
 
