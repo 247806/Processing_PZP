@@ -3,7 +3,10 @@ float cx, cy;
 float pendulumAngle = 0;
 float pendulumSpeed = 0.05;
 float r, o1, o2;
-
+float maxAngle = PI / 4; 
+float angle = 0;
+float speed = 0.05; 
+float lengthW = 0;
 
 void setup() {
   size(500, 500);
@@ -13,6 +16,7 @@ void setup() {
   o1 = width / 2;
   o2 = height / 2;
   r = min(width, height) /3;
+  lengthW = clockRadius * 1.2;
 }
 
 void draw() {
@@ -26,7 +30,7 @@ void draw() {
 
   drawTime(h, m, s);
 
-  drawPendulum();
+  drawWahadlo();
 }
 
 void drawClock() {
@@ -69,30 +73,19 @@ void drawTime(int h, int m, int s) {
   line(o1, o2, o1 + cos(sAngle) * r * 0.7, o2 + sin(sAngle) * r * 0.7);
 }
 
-void drawPendulum() {
-  // Pendulum origin
-  float pendulumOriginX = cx;
-  float pendulumOriginY = cy + clockRadius + 20;
+void drawWahadlo() {
   
-  // Pendulum length
-  float pendulumLength = 100;
-  
-  // Calculate pendulum position
-  float pendulumX = pendulumOriginX + sin(pendulumAngle) * pendulumLength;
-  float pendulumY = pendulumOriginY + cos(pendulumAngle) * pendulumLength;
-  
-  // Draw pendulum rod
+  angle = sin(frameCount * speed) * maxAngle;
+
+  float brightness = map(abs(angle), 0, maxAngle, 255, 100);
   stroke(0);
-  strokeWeight(4);
-  line(pendulumOriginX, pendulumOriginY, pendulumX, pendulumY);
+  fill(brightness);
   
-  // Draw pendulum bob
-  fill(0);
-  ellipse(pendulumX, pendulumY, 30, 30);
+  pushMatrix();
   
-  // Update pendulum angle for oscillation
-  pendulumAngle += pendulumSpeed;
-  if (pendulumAngle > PI / 6 || pendulumAngle < -PI / 6) {
-    pendulumSpeed *= -1;
-  }
+  translate(o1, o2);
+  rotate(angle);
+  line(0, 0, 0,lengthW);
+  circle(0, lengthW, 40); 
+  popMatrix();
 }
