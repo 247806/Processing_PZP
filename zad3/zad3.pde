@@ -1,24 +1,23 @@
-PFont font1, font2; // Dwa zewnętrzne fonty
-ArrayList<TextElement> textElements;  // Lista przechowująca tekst i jego właściwości
-float currentSize;  // Domyślny rozmiar tekstu
-PFont currentFont;  // Aktualnie wybrany font
+PFont font1, font2, currentFont;;
+ArrayList<TextElement> textElements;
+float currentSize;
 int topMargin = 20, bottomMargin = 10, sideMargin = 20;  // Marginesy
 float scrollOffset = 0;  // Przewijanie tekstu
-ArrayList<FontButton> fontButtons;  // Przycisk wyboru fontów
-ArrayList<SizeButton> sizeButtons;  // Przycisk wyboru rozmiarów tekstu
+ArrayList<FontButton> fontButtons; 
+ArrayList<SizeButton> sizeButtons;
 PShape activeFontButton, activeSizeButton;  // Aktywnie wybrane przyciski
 float currentX, currentY;  // Pozycje do umieszczania kolejnego znaku
 
 void setup() {
-  size(600, 600);  // Rozmiar okna
-  font1 = createFont("QwitcherGrypen-Regular.ttf", 32);  // Ładowanie zewnętrznych fontów
+  size(600, 600);
+  font1 = createFont("QwitcherGrypen-Regular.ttf", 32); 
   font2 = createFont("ProtestStrike-Regular.ttf", 32); 
-  textElements = new ArrayList<TextElement>();  // Lista przechowująca wprowadzony tekst
-  fontButtons = new ArrayList<FontButton>();  // Lista przycisków fontów
-  sizeButtons = new ArrayList<SizeButton>();  // Lista przycisków rozmiarów tekstu
+  textElements = new ArrayList<TextElement>(); 
+  fontButtons = new ArrayList<FontButton>(); 
+  sizeButtons = new ArrayList<SizeButton>();
   
-  currentFont = font2;  // Domyślnie ustawiony font
-  currentSize = 30;  // Domyślnie ustawiony rozmiar
+  currentFont = font2; 
+  currentSize = 30; 
   currentX = sideMargin;  // Inicjalizacja pozycji tekstu (z marginesem)
   currentY = topMargin;
   
@@ -34,12 +33,12 @@ void setup() {
 
 void draw() {
   background(255);
-  drawText();  // Rysowanie pisanego tekstu
-  drawSettings(0, height * 3/4, width, height / 4);  // Rysowanie przycisków w dolnej części
+  drawText(); 
+  drawSettings(0, height * 3/4, width, height / 4); 
 }
 
 void drawSettings(float x, float y, float w, float h) {
-  // Rysowanie dolnej części ekranu z przyciskami wyboru fontu i rozmiaru
+  
   fill(240);
   noStroke();
   rect(x, y, w, h);
@@ -71,9 +70,9 @@ class FontButton {
   
   void drawFontButton() {
   if (isActive) {
-      fill(0,255,0);  // Inny kolor dla aktywnego przycisku
+      fill(0,255,0); 
     } else {
-      fill(255);  // Domyślny kolor
+      fill(255); 
     }
   this.button = createShape(RECT, x, y, w, h);
   shape(this.button);
@@ -102,9 +101,9 @@ class SizeButton {
   
   void drawSizeButton() {
   if (isActive) {
-      fill(0,255,0);  // Inny kolor dla aktywnego przycisku
+      fill(0,255,0);  
     } else {
-      fill(255);  // Domyślny kolor
+      fill(255); 
     }
   this.button = createShape(RECT, x, y, w, h);
   shape(this.button);
@@ -115,7 +114,7 @@ class SizeButton {
   }
 }
 
-// Klasa przechowująca informacje o tekście
+
 class TextElement {
   char c;
   float x, y;
@@ -134,13 +133,10 @@ class TextElement {
 void drawText() {
   pushMatrix();
   translate(0, scrollOffset);  // Przewijanie tekstu
-  float x = sideMargin;
-  float y = topMargin;
 
   for (TextElement el : textElements) {
-    textFont(el.font, el.size);  // Ustawienie odpowiedniego fontu i rozmiaru dla elementu
+    textFont(el.font, el.size);  
     fill(0);
-    textAlign(CENTER,CENTER);
     text(el.c, el.x, el.y);  // Rysowanie tekstu w odpowiednich współrzędnych
   }
   popMatrix();
@@ -152,20 +148,23 @@ void keyPressed() {
     TextElement lastElement = textElements.remove(textElements.size() - 1);  // Usuwanie ostatniego znaku
     currentX = lastElement.x;  // Ustawienie aktualnej pozycji na wcześniejszą
     currentY = lastElement.y;
-  } else if (key != BACKSPACE) {
+  } else if (Character.isLetterOrDigit(key) || key == ' ' || key == '.' || key == ',' || key == '!' || key == '?' || key == ';' || key == ':') {
     textFont(currentFont, currentSize);
     float charWidth = textWidth(key);
     
     // Sprawdzanie, czy nowy znak zmieści się w bieżącej linii
-    if (currentX + charWidth > width - sideMargin) {
-      currentX = sideMargin;  // Przenieś do nowej linii
-      currentY += textAscent() + textDescent();
-    }
+    if (currentY + textAscent() + textDescent() > height * 3 / 4 - bottomMargin && currentX + charWidth > width - sideMargin) {
+      scrollOffset -= textAscent() + textDescent() + 5;  // Przesuwamy widok w górę
+      currentX = sideMargin;
+      currentY += textAscent() + textDescent() + 5;
+    } else if (currentX + charWidth > width - sideMargin) {
+      currentX = sideMargin;
+      currentY += textAscent() + textDescent() + 5;
+    } 
     
     // Dodajemy nowy element do listy
     textElements.add(new TextElement(key, currentX, currentY, currentFont, currentSize));
-    
-    // Przesuwamy pozycję dla kolejnego znaku
+   
     currentX += charWidth;
   }
 }
@@ -173,31 +172,28 @@ void keyPressed() {
 void mousePressed() {
   for (FontButton b : fontButtons) {
     if (mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h) {
-      currentFont = b.font;  // Ustaw aktualny font
+      currentFont = b.font;  
       for (FontButton fb : fontButtons) {
-        fb.isActive = false;  // Resetuj wszystkie przyciski
+        fb.isActive = false;  
       }
-      b.isActive = true;  // Ustaw bieżący przycisk jako aktywny
+      b.isActive = true;  
     }
   }
 
   for (SizeButton b : sizeButtons) {
     if (mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h) {
-      currentSize = b.size;  // Ustaw aktualny rozmiar
+      currentSize = b.size; 
       for (SizeButton sb : sizeButtons) {
-        sb.isActive = false;  // Resetuj wszystkie przyciski
+        sb.isActive = false; 
       }
-      b.isActive = true;  // Ustaw bieżący przycisk jako aktywny
+      b.isActive = true; 
     }
   }
 }
 
 void mouseWheel(MouseEvent event) {
-  scrollOffset += event.getCount() * 10;  // Przewijanie tekstu
-}
-
-boolean mouseOverShape(PShape shape) {
-  // Sprawdzenie, czy mysz znajduje się nad kształtem przycisku
-  return mouseX > shape.getVertex(0).x && mouseX < shape.getVertex(2).x &&
-         mouseY > shape.getVertex(0).y && mouseY < shape.getVertex(2).y;
+  if (mouseY > 0 && mouseY < 200) {
+  scrollOffset += event.getCount() * 10; 
+  }
+ 
 }
