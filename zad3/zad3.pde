@@ -1,28 +1,28 @@
 PFont font1, font2, currentFont;;
 ArrayList<TextElement> textElements;
 float currentSize;
-int topMargin = 20, bottomMargin = 10, sideMargin = 20;  // Marginesy
-float scrollOffset = 0;  // Przewijanie tekstu
+int topMargin = 20, bottomMargin = 10, sideMargin = 20; 
+float scrollOffset = 0;
 ArrayList<FontButton> fontButtons; 
 ArrayList<SizeButton> sizeButtons;
-PShape activeFontButton, activeSizeButton;  // Aktywnie wybrane przyciski
-float currentX, currentY;  // Pozycje do umieszczania kolejnego znaku
+PShape activeFontButton, activeSizeButton; 
+float currentX, currentY;
 
 void setup() {
   size(600, 600);
-  font1 = createFont("QwitcherGrypen-Regular.ttf", 32); 
-  font2 = createFont("ProtestStrike-Regular.ttf", 32); 
+  font1 = createFont("SpaceMono-Regular.ttf", 32); 
+  font2 = createFont("AnonymousPro-Regular.ttf", 32); 
   textElements = new ArrayList<TextElement>(); 
   fontButtons = new ArrayList<FontButton>(); 
   sizeButtons = new ArrayList<SizeButton>();
   
   currentFont = font2; 
   currentSize = 30; 
-  currentX = sideMargin;  // Inicjalizacja pozycji tekstu (z marginesem)
+  currentX = sideMargin;
   currentY = topMargin;
   
-  fontButtons.add(new FontButton(5, height * 3/4 + 20, 190, 50, "QwitcherGrypen", font1));
-  fontButtons.add(new FontButton(5, height * 3/4 + 95, 190, 50, "ProtestStrike", font2));
+  fontButtons.add(new FontButton(5, height * 3/4 + 20, 190, 50, "SpaceMono", font1));
+  fontButtons.add(new FontButton(5, height * 3/4 + 95, 190, 50, "AnonymousPro", font2));
   fontButtons.get(1).isActive = true;
   
   sizeButtons.add(new SizeButton(205, height * 3/4 + 20, 190, 50, "30", 30));
@@ -77,7 +77,7 @@ class FontButton {
   this.button = createShape(RECT, x, y, w, h);
   shape(this.button);
   fill(0);
-  textFont(font, 32);
+  textFont(font, 26);
   textAlign(CENTER, CENTER);
   text(label, x + w / 2, y + h /2);
   }
@@ -132,12 +132,12 @@ class TextElement {
 
 void drawText() {
   pushMatrix();
-  translate(0, scrollOffset);  // Przewijanie tekstu
+  translate(0, scrollOffset);
 
   for (TextElement el : textElements) {
     textFont(el.font, el.size);  
     fill(0);
-    text(el.c, el.x, el.y);  // Rysowanie tekstu w odpowiednich współrzędnych
+    text(el.c, el.x, el.y);
   }
   popMatrix();
 }
@@ -145,27 +145,29 @@ void drawText() {
 
 void keyPressed() {
   if (key == BACKSPACE && textElements.size() > 0) {
-    TextElement lastElement = textElements.remove(textElements.size() - 1);  // Usuwanie ostatniego znaku
-    currentX = lastElement.x;  // Ustawienie aktualnej pozycji na wcześniejszą
+    TextElement lastElement = textElements.remove(textElements.size() - 1);
+    currentX = lastElement.x;
     currentY = lastElement.y;
   } else if (Character.isLetterOrDigit(key) || key == ' ' || key == '.' || key == ',' || key == '!' || key == '?' || key == ';' || key == ':') {
     textFont(currentFont, currentSize);
     float charWidth = textWidth(key);
-    
-    // Sprawdzanie, czy nowy znak zmieści się w bieżącej linii
+ 
     if (currentY + textAscent() + textDescent() > height * 3 / 4 - bottomMargin && currentX + charWidth > width - sideMargin) {
-      scrollOffset -= textAscent() + textDescent() + 5;  // Przesuwamy widok w górę
+      scrollOffset -= textAscent() + textDescent() + 5;
       currentX = sideMargin;
       currentY += textAscent() + textDescent() + 5;
     } else if (currentX + charWidth > width - sideMargin) {
       currentX = sideMargin;
       currentY += textAscent() + textDescent() + 5;
-    } 
+    } else if (key == ENTER) {
+    }
     
-    // Dodajemy nowy element do listy
     textElements.add(new TextElement(key, currentX, currentY, currentFont, currentSize));
    
-    currentX += charWidth;
+    currentX += charWidth + 2 ;
+  } else if (key == ENTER) {
+    currentX = sideMargin;
+      currentY += textAscent() + textDescent() + 5;
   }
 }
 
